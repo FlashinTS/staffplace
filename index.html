@@ -18,7 +18,7 @@
         .header {
             background-color: #4CAF50;
             color: white;
-            padding: 8px 10px;
+            padding: 6px 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -28,29 +28,30 @@
             display: flex;
             flex: 1;
             overflow: hidden;
+            gap: 5px; /* Уменьшенный зазор между блоками */
+            padding: 5px;
         }
         
         .staff-assignment {
             flex: 3;
-            padding: 8px;
             overflow-y: auto;
             border-right: 1px solid #ccc;
+            padding-right: 5px;
         }
         
         .staff-list {
             flex: 2;
-            padding: 8px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            gap: 5px; /* Уменьшенный зазор между блоками */
         }
         
         .available-staff {
             flex: 1;
             overflow-y: auto;
-            margin-bottom: 8px;
             border: 1px solid #ddd;
-            padding: 4px;
+            padding: 3px;
         }
         
         .unavailable-staff {
@@ -58,13 +59,13 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            gap: 5px; /* Уменьшенный зазор между блоками */
         }
         
         .unavailable-section {
             flex: 1;
-            margin-bottom: 8px;
             border: 1px solid #ddd;
-            padding: 4px;
+            padding: 3px;
             overflow-y: auto;
         }
         
@@ -76,7 +77,7 @@
         
         th, td {
             border: 1px solid #ddd;
-            padding: 4px;
+            padding: 3px;
             vertical-align: top;
         }
         
@@ -97,13 +98,13 @@
         
         .employee {
             background-color: #e9f7ef;
-            padding: 3px 5px;
-            margin: 2px;
-            border-radius: 3px;
+            padding: 2px 4px;
+            margin: 1px;
+            border-radius: 2px;
             cursor: move;
             display: inline-block;
-            font-size: 12px;
-            line-height: 1.2;
+            font-size: 11px;
+            line-height: 1.1;
         }
         
         .employee:hover {
@@ -111,11 +112,11 @@
         }
         
         .dropzone {
-            min-height: 30px;
-            padding: 3px;
-            margin: 2px 0;
+            min-height: 25px;
+            padding: 2px;
+            margin: 1px 0;
             border: 1px dashed #ccc;
-            border-radius: 3px;
+            border-radius: 2px;
         }
         
         .dropzone.highlight {
@@ -125,12 +126,12 @@
         
         .section-title {
             font-weight: bold;
-            margin-bottom: 4px;
-            font-size: 13px;
+            margin-bottom: 2px;
+            font-size: 12px;
         }
         
         .counter {
-            font-size: 12px;
+            font-size: 11px;
             color: #666;
         }
         
@@ -138,11 +139,11 @@
             background-color: #4CAF50;
             color: white;
             border: none;
-            padding: 5px 8px;
-            margin: 2px;
-            border-radius: 3px;
+            padding: 4px 6px;
+            margin: 1px;
+            border-radius: 2px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 11px;
         }
         
         button:hover {
@@ -151,9 +152,9 @@
         
         .delete-btn {
             background-color: #f44336;
-            padding: 1px 3px;
-            font-size: 11px;
-            margin-left: 3px;
+            padding: 0 2px;
+            font-size: 10px;
+            margin-left: 2px;
         }
         
         .delete-btn:hover {
@@ -173,45 +174,66 @@
         
         .modal-content {
             background-color: #fefefe;
-            margin: 10% auto;
-            padding: 15px;
+            margin: 5% auto;
+            padding: 12px;
             border: 1px solid #888;
-            width: 300px;
-            border-radius: 4px;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            border-radius: 3px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
         }
         
         .modal-buttons {
             display: flex;
-            justify-content: flex-end;
-            margin-top: 15px;
+            gap: 5px;
         }
         
         .archive-item {
             display: flex;
             justify-content: space-between;
-            padding: 6px;
+            padding: 5px;
             border-bottom: 1px solid #ddd;
-            font-size: 13px;
+            font-size: 12px;
         }
         
-        .archive-actions button {
-            margin-left: 3px;
-            padding: 3px 5px;
+        .archive-actions {
+            display: flex;
+            gap: 3px;
         }
         
         .total-counter {
             font-weight: bold;
-            margin: 0 10px;
-            padding: 3px 6px;
+            margin: 0 8px;
+            padding: 2px 5px;
             background-color: transparent;
-            border-radius: 3px;
-            font-size: 13px;
+            border-radius: 2px;
+            font-size: 12px;
         }
         
         #assignmentTable tbody {
             display: block;
             overflow-y: auto;
-            max-height: calc(100vh - 150px);
+            max-height: calc(100vh - 140px);
         }
         
         #assignmentTable thead, #assignmentTable tbody tr {
@@ -226,15 +248,21 @@
         
         input[type="text"] {
             width: 100%;
-            padding: 6px;
+            padding: 5px;
             box-sizing: border-box;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        
+        h2, h3 {
+            margin: 2px 0;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h2 style="font-size: 16px; margin: 0;">Расстановка персонала на смену</h2>
+        <h2>Расстановка персонала на смену</h2>
         <div>
             <span class="total-counter">Расставлено: <span id="totalAssignedCounter">0</span>/<span id="totalAvailableCounter">0</span></span>
             <button id="archiveBtn">Архив</button>
@@ -245,7 +273,7 @@
     
     <div class="main-content">
         <div class="staff-assignment">
-            <h3 style="font-size: 14px; margin: 5px 0;">Расстановка персонала</h3>
+            <h3>Расстановка персонала</h3>
             <table id="assignmentTable">
                 <thead>
                     <tr>
@@ -285,21 +313,29 @@
     <!-- Модальное окно архива -->
     <div id="archiveModal" class="modal">
         <div class="modal-content">
-            <h3>Архив смен</h3>
-            <div id="archiveList"></div>
-            <button id="closeArchiveBtn">Закрыть</button>
+            <div class="modal-header">
+                <h3>Архив смен</h3>
+                <button id="closeArchiveBtn">Закрыть</button>
+            </div>
+            <div class="modal-body" id="archiveList"></div>
         </div>
     </div>
     
     <!-- Модальное окно сохранения -->
     <div id="saveModal" class="modal">
         <div class="modal-content">
-            <h3>Сохранение смены</h3>
-            <p>Введите название смены:</p>
-            <input type="text" id="shiftName" placeholder="Название смены">
-            <div class="modal-buttons">
-                <button id="cancelSaveBtn">Отмена</button>
-                <button id="confirmSaveBtn">Сохранить</button>
+            <div class="modal-header">
+                <h3>Сохранение смены</h3>
+            </div>
+            <div class="modal-body">
+                <p>Введите название смены:</p>
+                <input type="text" id="shiftName" placeholder="Название смены">
+            </div>
+            <div class="modal-footer">
+                <div class="modal-buttons">
+                    <button id="cancelSaveBtn">Отмена</button>
+                    <button id="confirmSaveBtn">Сохранить</button>
+                </div>
             </div>
         </div>
     </div>
@@ -307,11 +343,17 @@
     <!-- Модальное окно сброса -->
     <div id="resetModal" class="modal">
         <div class="modal-content">
-            <h3>Подтверждение сброса</h3>
-            <p>Вы уверены, что хотите сбросить все данные?</p>
-            <div class="modal-buttons">
-                <button id="cancelResetBtn">Отмена</button>
-                <button id="confirmResetBtn">Сбросить</button>
+            <div class="modal-header">
+                <h3>Подтверждение сброса</h3>
+            </div>
+            <div class="modal-body">
+                <p>Вы уверены, что хотите сбросить все данные?</p>
+            </div>
+            <div class="modal-footer">
+                <div class="modal-buttons">
+                    <button id="cancelResetBtn">Отмена</button>
+                    <button id="confirmResetBtn">Сбросить</button>
+                </div>
             </div>
         </div>
     </div>
@@ -319,12 +361,18 @@
     <!-- Модальное окно редактирования архива -->
     <div id="editArchiveModal" class="modal">
         <div class="modal-content">
-            <h3>Редактирование смены</h3>
-            <p>Введите новое название:</p>
-            <input type="text" id="editShiftName" placeholder="Новое название">
-            <div class="modal-buttons">
-                <button id="cancelEditBtn">Отмена</button>
-                <button id="saveEditBtn">Сохранить</button>
+            <div class="modal-header">
+                <h3>Редактирование смены</h3>
+            </div>
+            <div class="modal-body">
+                <p>Введите новое название:</p>
+                <input type="text" id="editShiftName" placeholder="Новое название">
+            </div>
+            <div class="modal-footer">
+                <div class="modal-buttons">
+                    <button id="cancelEditBtn">Отмена</button>
+                    <button id="saveEditBtn">Сохранить</button>
+                </div>
             </div>
         </div>
     </div>
@@ -685,9 +733,16 @@
             state.dayOff = [...shiftData.data.dayOff];
             state.assignments = JSON.parse(JSON.stringify(shiftData.data.assignments));
             
+            // Инициализация всех элементов интерфейса
             initAssignmentTable();
             initAvailableStaff();
             initUnavailableStaff();
+            
+            // Повторная инициализация dropzones после загрузки
+            setTimeout(() => {
+                setupDropzones();
+            }, 0);
+            
             document.getElementById('archiveModal').style.display = 'none';
         }
         
