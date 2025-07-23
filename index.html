@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Расстановка персонала</title>
     <style>
         body {
@@ -22,29 +22,47 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .header h2 {
+            font-size: 16px;
+            margin: 5px 0;
+            flex: 1 1 100%;
+            order: 1;
+        }
+        
+        .header-controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 5px;
+            order: 2;
+            width: 100%;
         }
         
         .main-content {
             display: flex;
             flex: 1;
             overflow: hidden;
-            gap: 5px; /* Уменьшенный зазор между блоками */
+            gap: 5px;
             padding: 5px;
+            flex-direction: column;
         }
         
         .staff-assignment {
-            flex: 3;
+            flex: 1;
             overflow-y: auto;
-            border-right: 1px solid #ccc;
-            padding-right: 5px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
         }
         
         .staff-list {
-            flex: 2;
+            flex: 1;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            gap: 5px; /* Уменьшенный зазор между блоками */
+            gap: 5px;
         }
         
         .available-staff {
@@ -59,7 +77,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            gap: 5px; /* Уменьшенный зазор между блоками */
+            gap: 5px;
         }
         
         .unavailable-section {
@@ -79,6 +97,7 @@
             border: 1px solid #ddd;
             padding: 3px;
             vertical-align: top;
+            word-break: break-word;
         }
         
         th {
@@ -144,6 +163,7 @@
             border-radius: 2px;
             cursor: pointer;
             font-size: 11px;
+            white-space: nowrap;
         }
         
         button:hover {
@@ -177,7 +197,7 @@
             margin: 5% auto;
             padding: 12px;
             border: 1px solid #888;
-            width: 80%;
+            width: 90%;
             max-width: 800px;
             max-height: 80vh;
             border-radius: 3px;
@@ -228,6 +248,7 @@
             background-color: transparent;
             border-radius: 2px;
             font-size: 12px;
+            white-space: nowrap;
         }
         
         #assignmentTable tbody {
@@ -258,14 +279,125 @@
             margin: 2px 0;
             font-size: 14px;
         }
+
+        /* Мобильная адаптация */
+        @media (min-width: 768px) {
+            .main-content {
+                flex-direction: row;
+            }
+            
+            .staff-assignment {
+                border-right: 1px solid #ccc;
+                border-bottom: none;
+                padding-right: 5px;
+            }
+            
+            .header h2 {
+                flex: 1;
+                order: 1;
+                font-size: 18px;
+            }
+            
+            .header-controls {
+                flex: 1;
+                order: 2;
+                width: auto;
+                justify-content: flex-end;
+            }
+            
+            .unavailable-staff {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .unavailable-section {
+                flex: 1 1 calc(50% - 10px);
+                min-width: 150px;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .unavailable-staff {
+                flex-direction: column;
+            }
+            
+            .unavailable-section {
+                flex: 1;
+            }
+        }
+
+        /* Для очень маленьких экранов */
+        @media (max-width: 480px) {
+            .employee {
+                font-size: 10px;
+                padding: 1px 3px;
+            }
+            
+            button {
+                padding: 3px 5px;
+                font-size: 10px;
+            }
+            
+            .section-title {
+                font-size: 11px;
+            }
+            
+            th, td {
+                padding: 2px;
+                font-size: 11px;
+            }
+        }
+
+        /* Стили для мобильного меню */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        @media (max-width: 767px) {
+            .mobile-menu-btn {
+                display: block;
+                order: 0;
+            }
+            
+            .header-controls {
+                display: none;
+                flex-direction: column;
+                background-color: #45a049;
+                position: absolute;
+                top: 40px;
+                right: 10px;
+                z-index: 100;
+                padding: 10px;
+                border-radius: 5px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            }
+            
+            .header-controls.active {
+                display: flex;
+            }
+            
+            .header {
+                position: relative;
+            }
+        }
     </style>
+    <!-- Библиотека для экспорта в Excel -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
     <div class="header">
+        <button class="mobile-menu-btn">☰</button>
         <h2>Расстановка персонала на смену</h2>
-        <div>
+        <div class="header-controls">
             <span class="total-counter">Расставлено: <span id="totalAssignedCounter">0</span>/<span id="totalAvailableCounter">0</span></span>
             <button id="archiveBtn">Архив</button>
+            <button id="exportBtn">Экспорт в Excel</button>
             <button id="saveBtn">Сохранить</button>
             <button id="resetBtn">Сбросить</button>
         </div>
@@ -796,6 +928,55 @@
             
             document.getElementById('archiveModal').style.display = 'block';
         }
+
+        // Экспорт в Excel
+        function exportToExcel() {
+            // Создаем рабочую книгу
+            const wb = XLSX.utils.book_new();
+            
+            // Подготовка данных для листа "Расстановка"
+            const assignmentData = [];
+            
+            // Заголовки
+            assignmentData.push(["Участок", "Сотрудники"]);
+            
+            // Данные
+            sections.forEach(section => {
+                const employees = state.assignments[section] || [];
+                assignmentData.push([section, employees.join(", ")]);
+            });
+            
+            // Создаем лист
+            const assignmentWs = XLSX.utils.aoa_to_sheet(assignmentData);
+            
+            // Добавляем лист в книгу
+            XLSX.utils.book_append_sheet(wb, assignmentWs, "Расстановка");
+            
+            // Подготовка данных для листа "Статусы"
+            const statusData = [];
+            
+            // Заголовки
+            statusData.push(["Статус", "Сотрудники"]);
+            
+            // Данные
+            statusData.push(["Доступные", state.available.join(", ")]);
+            statusData.push(["Отпуск", state.vacation.join(", ")]);
+            statusData.push(["Больничный", state.sickLeave.join(", ")]);
+            statusData.push(["Отгул", state.dayOff.join(", ")]);
+            
+            // Создаем лист
+            const statusWs = XLSX.utils.aoa_to_sheet(statusData);
+            
+            // Добавляем лист в книгу
+            XLSX.utils.book_append_sheet(wb, statusWs, "Статусы");
+            
+            // Генерируем имя файла с текущей датой
+            const date = new Date();
+            const fileName = `Расстановка_${date.getDate()}-${date.getMonth()+1}-${date.getFullYear()}.xlsx`;
+            
+            // Сохраняем файл
+            XLSX.writeFile(wb, fileName);
+        }
         
         // Инициализация модальных окон
         function initModals() {
@@ -843,6 +1024,9 @@
                 editArchiveItem(index, document.getElementById('editShiftName').value);
             });
             
+            // Экспорт в Excel
+            document.getElementById('exportBtn').addEventListener('click', exportToExcel);
+            
             // Обработчики для динамически создаваемых кнопок архива
             document.addEventListener('click', (e) => {
                 if (e.target.classList.contains('load-archive-btn')) {
@@ -862,6 +1046,11 @@
                 if (e.target.classList.contains('modal')) {
                     e.target.style.display = 'none';
                 }
+            });
+
+            // Мобильное меню
+            document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+                document.querySelector('.header-controls').classList.toggle('active');
             });
         }
         
