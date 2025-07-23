@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расстановка персонала</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .staff-assignment {
+            flex: 3;
+            padding: 8px;
+            overflow-y: auto;
+            border-right: 1px solid #ccc;
+        }
+        
+        .staff-list {
+            flex: 2;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .available-staff {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 8px;
+            border: 1px solid #ddd;
+            padding: 4px;
+        }
+        
+        .unavailable-staff {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .unavailable-section {
+            flex: 1;
+            margin-bottom: 8px;
+            border: 1px solid #ddd;
+            padding: 4px;
+            overflow-y: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 4px;
+            vertical-align: top;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+            position: sticky;
+            top: 0;
+        }
+        
+        .section-column {
+            width: 30%;
+        }
+        
+        .employees-column {
+            width: 70%;
+        }
+        
+        .employee {
+            background-color: #e9f7ef;
+            padding: 3px 5px;
+            margin: 2px;
+            border-radius: 3px;
+            cursor: move;
+            display: inline-block;
+            font-size: 12px;
+            line-height: 1.2;
+        }
+        
+        .employee:hover {
+            background-color: #d4edda;
+        }
+        
+        .dropzone {
+            min-height: 30px;
+            padding: 3px;
+            margin: 2px 0;
+            border: 1px dashed #ccc;
+            border-radius: 3px;
+        }
+        
+        .dropzone.highlight {
+            border-color: #4CAF50;
+            background-color: #f0fff0;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+        
+        .counter {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 8px;
+            margin: 2px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .delete-btn {
+            background-color: #f44336;
+            padding: 1px 3px;
+            font-size: 11px;
+            margin-left: 3px;
+        }
+        
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 15px;
+            border: 1px solid #888;
+            width: 300px;
+            border-radius: 4px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+        
+        .archive-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px;
+            border-bottom: 1px solid #ddd;
+            font-size: 13px;
+        }
+        
+        .archive-actions button {
+            margin-left: 3px;
+            padding: 3px 5px;
+        }
+        
+        .total-counter {
+            font-weight: bold;
+            margin: 0 10px;
+            padding: 3px 6px;
+            background-color: transparent;
+            border-radius: 3px;
+            font-size: 13px;
+        }
+        
+        #assignmentTable tbody {
+            display: block;
+            overflow-y: auto;
+            max-height: calc(100vh - 150px);
+        }
+        
+        #assignmentTable thead, #assignmentTable tbody tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+        
+        #assignmentTable {
+            width: 100%;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 6px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2 style="font-size: 16px; margin: 0;">Расстановка персонала на смену</h2>
+        <div>
+            <span class="total-counter">Расставлено: <span id="totalAssignedCounter">0</span>/<span id="totalAvailableCounter">0</span></span>
+            <button id="archiveBtn">Архив</button>
+            <button id="saveBtn">Сохранить</button>
+            <button id="resetBtn">Сбросить</button>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <div class="staff-assignment">
+            <h3 style="font-size: 14px; margin: 5px 0;">Расстановка персонала</h3>
+            <table id="assignmentTable">
+                <thead>
+                    <tr>
+                        <th class="section-column">Участок</th>
+                        <th class="employees-column">Сотрудники</th>
+                    </tr>
+                </thead>
+                <tbody id="assignmentBody"></tbody>
+            </table>
+        </div>
+        
+        <div class="staff-list">
+            <div class="available-staff">
+                <div class="section-title">Доступные сотрудники <span class="counter" id="availableCounter">0</span></div>
+                <div id="availableStaff" class="dropzone"></div>
+            </div>
+            
+            <div class="unavailable-staff">
+                <div class="unavailable-section">
+                    <div class="section-title">Отпуск <span class="counter" id="vacationCounter">0</span></div>
+                    <div id="vacationStaff" class="dropzone"></div>
+                </div>
+                
+                <div class="unavailable-section">
+                    <div class="section-title">Больничный <span class="counter" id="sickLeaveCounter">0</span></div>
+                    <div id="sickLeaveStaff" class="dropzone"></div>
+                </div>
+                
+                <div class="unavailable-section">
+                    <div class="section-title">Отгул <span class="counter" id="dayOffCounter">0</span></div>
+                    <div id="dayOffStaff" class="dropzone"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно архива -->
+    <div id="archiveModal" class="modal">
+        <div class="modal-content">
+            <h3>Архив смен</h3>
+            <div id="archiveList"></div>
+            <button id="closeArchiveBtn">Закрыть</button>
+        </div>
+    </div>
+    
+    <!-- Модальное окно сохранения -->
+    <div id="saveModal" class="modal">
+        <div class="modal-content">
+            <h3>Сохранение смены</h3>
+            <p>Введите название смены:</p>
+            <input type="text" id="shiftName" placeholder="Название смены">
+            <div class="modal-buttons">
+                <button id="cancelSaveBtn">Отмена</button>
+                <button id="confirmSaveBtn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно сброса -->
+    <div id="resetModal" class="modal">
+        <div class="modal-content">
+            <h3>Подтверждение сброса</h3>
+            <p>Вы уверены, что хотите сбросить все данные?</p>
+            <div class="modal-buttons">
+                <button id="cancelResetBtn">Отмена</button>
+                <button id="confirmResetBtn">Сбросить</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно редактирования архива -->
+    <div id="editArchiveModal" class="modal">
+        <div class="modal-content">
+            <h3>Редактирование смены</h3>
+            <p>Введите новое название:</p>
+            <input type="text" id="editShiftName" placeholder="Новое название">
+            <div class="modal-buttons">
+                <button id="cancelEditBtn">Отмена</button>
+                <button id="saveEditBtn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Списки данных
+        const employees = [
+            "Арисов Александр", "Афанасьев Илья", "Божко Максим", "Бурхатова Надя", 
+            "Гордеев Артём", "Дегтярёв Дмитрий", "Дескин Дмитрий", "Дмитриев Андрей", 
+            "Дмитриус Марина", "Иконникова Марина", "Караулан Наташа", "Каримова Анна", 
+            "Кашицына Алина", "Ковынева Виктория", "Копылова Алина", "Кормильцына Мария", 
+            "Кутьин Андрей", "Летяго Валерия", "Лозовский Александр", "Михайлов Вова", 
+            "Никиточкина Евгения", "Паршина Полина", "Росляков Александр", "Русу Лилия", 
+            "Тезикова Анастасия", "Чернышова Татьяна", "Филимонова Полина", "Фокина Татьяна", 
+            "Фролова Ирина", "Чикунова Светлана", "Шабнова Анастасия", "Лемке Валентина"
+        ];
+        
+        const sections = [
+            "RUWI", "Джокер 1 круг приемки М2", "Джокер 2 круг приемки М2", "РАЗМЕЩЕНИЕ", 
+            "Возвраты (джокер)", "Возвраты (2 круг)", "Нулевая комната M2", "Нулевая комната К", 
+            "МВ (поиск потерянного товара)", "IS (54-55, батчи.)", "IS (поиск потерянного товара)", 
+            "NC(корпус K)", "Дамчут", "Поиск Missing_Putaway", "FWO", "Поиск Missing_Picking", 
+            "TS в отделе QA", "RQMI и 0052", "Отгрузка", "Not_found", "Тех. Локи", 
+            "Сортировка shipped", "REL"
+        ];
+        
+        // Состояние приложения
+        let state = {
+            available: [...employees],
+            vacation: [],
+            sickLeave: [],
+            dayOff: [],
+            assignments: {},
+            archive: JSON.parse(localStorage.getItem('shiftArchive')) || []
+        };
+        
+        // Инициализация таблицы участков
+        function initAssignmentTable() {
+            const tbody = document.getElementById('assignmentBody');
+            tbody.innerHTML = '';
+            
+            sections.forEach(section => {
+                state.assignments[section] = state.assignments[section] || [];
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="section-column">${section}</td>
+                    <td class="employees-column dropzone" data-section="${section}"></td>
+                `;
+                tbody.appendChild(row);
+                
+                updateSectionEmployees(section);
+            });
+        }
+        
+        // Обновление сотрудников на участке
+        function updateSectionEmployees(section) {
+            const cell = document.querySelector(`td[data-section="${section}"]`);
+            cell.innerHTML = '';
+            
+            const employees = state.assignments[section] || [];
+            employees.forEach(employee => {
+                const empElement = createEmployeeElement(employee, section);
+                cell.appendChild(empElement);
+            });
+            
+            // Перенос на новую строку после 4 сотрудников
+            const employeeElements = cell.querySelectorAll('.employee');
+            employeeElements.forEach((el, index) => {
+                if (index > 0 && index % 4 === 0) {
+                    el.style.display = 'block';
+                }
+            });
+        }
+        
+        // Создание элемента сотрудника
+        function createEmployeeElement(employee, source) {
+            const div = document.createElement('div');
+            div.className = 'employee';
+            div.textContent = employee;
+            div.draggable = true;
+            div.dataset.employee = employee;
+            div.dataset.source = source;
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.textContent = '×';
+            deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                removeEmployee(employee, source);
+            };
+            
+            div.appendChild(deleteBtn);
+            
+            div.addEventListener('dragstart', dragStart);
+            
+            return div;
+        }
+        
+        // Инициализация списка доступных сотрудников
+        function initAvailableStaff() {
+            const container = document.getElementById('availableStaff');
+            container.innerHTML = '';
+            
+            state.available.forEach(employee => {
+                const empElement = createEmployeeElement(employee, 'available');
+                container.appendChild(empElement);
+            });
+            
+            updateCounters();
+        }
+        
+        // Инициализация списков отсутствующих сотрудников
+        function initUnavailableStaff() {
+            initUnavailableSection('vacation', 'vacationStaff');
+            initUnavailableSection('sickLeave', 'sickLeaveStaff');
+            initUnavailableSection('dayOff', 'dayOffStaff');
+        }
+        
+        function initUnavailableSection(stateKey, elementId) {
+            const container = document.getElementById(elementId);
+            container.innerHTML = '';
+            
+            state[stateKey].forEach(employee => {
+                const empElement = createEmployeeElement(employee, stateKey);
+                container.appendChild(empElement);
+            });
+            
+            updateCounters();
+        }
+        
+        // Обновление всех счетчиков
+        function updateCounters() {
+            document.getElementById('availableCounter').textContent = state.available.length;
+            document.getElementById('vacationCounter').textContent = state.vacation.length;
+            document.getElementById('sickLeaveCounter').textContent = state.sickLeave.length;
+            document.getElementById('dayOffCounter').textContent = state.dayOff.length;
+            
+            updateTotalCounters();
+        }
+        
+        // Обновление счетчика расставленного персонала
+        function updateTotalCounters() {
+            const totalAssigned = Object.values(state.assignments).reduce((sum, employees) => sum + employees.length, 0);
+            const unavailable = state.vacation.length + state.sickLeave.length + state.dayOff.length;
+            const totalAvailable = employees.length - unavailable;
+            
+            document.getElementById('totalAssignedCounter').textContent = totalAssigned;
+            document.getElementById('totalAvailableCounter').textContent = totalAvailable;
+        }
+        
+        // Drag and Drop функционал
+        function dragStart(e) {
+            e.dataTransfer.setData('text/plain', JSON.stringify({
+                employee: e.target.dataset.employee,
+                source: e.target.dataset.source
+            }));
+            e.dataTransfer.effectAllowed = 'move';
+        }
+        
+        function setupDropzones() {
+            const dropzones = document.querySelectorAll('.dropzone');
+            
+            dropzones.forEach(zone => {
+                zone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    zone.classList.add('highlight');
+                });
+                
+                zone.addEventListener('dragleave', () => {
+                    zone.classList.remove('highlight');
+                });
+                
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    zone.classList.remove('highlight');
+                    
+                    const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+                    const employee = data.employee;
+                    const source = data.source;
+                    const target = zone.id === 'availableStaff' ? 'available' : 
+                                   zone.id === 'vacationStaff' ? 'vacation' :
+                                   zone.id === 'sickLeaveStaff' ? 'sickLeave' :
+                                   zone.id === 'dayOffStaff' ? 'dayOff' : 
+                                   zone.dataset.section;
+                    
+                    moveEmployee(employee, source, target);
+                });
+            });
+        }
+        
+        // Перемещение сотрудника
+        function moveEmployee(employee, source, target) {
+            if (source === target) return;
+            
+            removeEmployeeFromSource(employee, source);
+            
+            if (!addEmployeeToTarget(employee, target)) {
+                addEmployeeToTarget(employee, source);
+                return;
+            }
+            
+            updateUIAfterMove(employee, source, target);
+            updateCounters();
+        }
+        
+        function removeEmployeeFromSource(employee, source) {
+            if (source === 'available') {
+                state.available = state.available.filter(e => e !== employee);
+            } else if (source === 'vacation') {
+                state.vacation = state.vacation.filter(e => e !== employee);
+            } else if (source === 'sickLeave') {
+                state.sickLeave = state.sickLeave.filter(e => e !== employee);
+            } else if (source === 'dayOff') {
+                state.dayOff = state.dayOff.filter(e => e !== employee);
+            } else if (state.assignments[source]) {
+                state.assignments[source] = state.assignments[source].filter(e => e !== employee);
+            }
+        }
+        
+        function addEmployeeToTarget(employee, target) {
+            if (target === 'available') {
+                if (!state.available.includes(employee)) {
+                    state.available.push(employee);
+                    return true;
+                }
+            } else if (target === 'vacation') {
+                if (!state.vacation.includes(employee)) {
+                    state.vacation.push(employee);
+                    return true;
+                }
+            } else if (target === 'sickLeave') {
+                if (!state.sickLeave.includes(employee)) {
+                    state.sickLeave.push(employee);
+                    return true;
+                }
+            } else if (target === 'dayOff') {
+                if (!state.dayOff.includes(employee)) {
+                    state.dayOff.push(employee);
+                    return true;
+                }
+            } else if (state.assignments[target]) {
+                const isAlreadyAssigned = Object.entries(state.assignments)
+                    .filter(([section, _]) => section !== target)
+                    .some(([_, employees]) => employees.includes(employee));
+                
+                if (!isAlreadyAssigned && !state.assignments[target].includes(employee)) {
+                    state.assignments[target].push(employee);
+                    return true;
+                } else if (isAlreadyAssigned) {
+                    alert('Сотрудник уже назначен на другой участок!');
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        function updateUIAfterMove(employee, source, target) {
+            if (source === 'available' || target === 'available') {
+                initAvailableStaff();
+            }
+            
+            if (source === 'vacation' || target === 'vacation') {
+                initUnavailableSection('vacation', 'vacationStaff');
+            }
+            
+            if (source === 'sickLeave' || target === 'sickLeave') {
+                initUnavailableSection('sickLeave', 'sickLeaveStaff');
+            }
+            
+            if (source === 'dayOff' || target === 'dayOff') {
+                initUnavailableSection('dayOff', 'dayOffStaff');
+            }
+            
+            if (state.assignments[source]) {
+                updateSectionEmployees(source);
+            }
+            
+            if (state.assignments[target]) {
+                updateSectionEmployees(target);
+            }
+        }
+        
+        // Удаление сотрудника
+        function removeEmployee(employee, source) {
+            removeEmployeeFromSource(employee, source);
+            
+            if (!state.available.includes(employee)) {
+                state.available.push(employee);
+            }
+            
+            if (source === 'available') {
+                initAvailableStaff();
+            } else if (source === 'vacation') {
+                initUnavailableSection('vacation', 'vacationStaff');
+            } else if (source === 'sickLeave') {
+                initUnavailableSection('sickLeave', 'sickLeaveStaff');
+            } else if (source === 'dayOff') {
+                initUnavailableSection('dayOff', 'dayOffStaff');
+            } else if (state.assignments[source]) {
+                updateSectionEmployees(source);
+                initAvailableStaff();
+            }
+            
+            updateCounters();
+        }
+        
+        // Сброс всех данных
+        function resetAll() {
+            if (!confirm('Вы уверены, что хотите сбросить все данные?')) return;
+            
+            state = {
+                available: [...employees],
+                vacation: [],
+                sickLeave: [],
+                dayOff: [],
+                assignments: {},
+                archive: state.archive
+            };
+            
+            initAssignmentTable();
+            initAvailableStaff();
+            initUnavailableStaff();
+        }
+        
+        // Сохранение в архив
+        function saveToArchive(name) {
+            if (!name.trim()) {
+                alert('Пожалуйста, введите название смены');
+                return;
+            }
+            
+            const shiftData = {
+                name: name.trim(),
+                date: new Date().toLocaleString(),
+                data: {
+                    available: [...state.available],
+                    vacation: [...state.vacation],
+                    sickLeave: [...state.sickLeave],
+                    dayOff: [...state.dayOff],
+                    assignments: JSON.parse(JSON.stringify(state.assignments))
+                }
+            };
+            
+            state.archive.push(shiftData);
+            localStorage.setItem('shiftArchive', JSON.stringify(state.archive));
+            document.getElementById('shiftName').value = '';
+            document.getElementById('saveModal').style.display = 'none';
+        }
+        
+        // Загрузка из архива
+        function loadFromArchive(index) {
+            const shiftData = state.archive[index];
+            state.available = [...shiftData.data.available];
+            state.vacation = [...shiftData.data.vacation];
+            state.sickLeave = [...shiftData.data.sickLeave];
+            state.dayOff = [...shiftData.data.dayOff];
+            state.assignments = JSON.parse(JSON.stringify(shiftData.data.assignments));
+            
+            initAssignmentTable();
+            initAvailableStaff();
+            initUnavailableStaff();
+            document.getElementById('archiveModal').style.display = 'none';
+        }
+        
+        // Удаление из архива
+        function deleteFromArchive(index) {
+            if (!confirm('Вы уверены, что хотите удалить эту запись?')) return;
+            
+            state.archive.splice(index, 1);
+            localStorage.setItem('shiftArchive', JSON.stringify(state.archive));
+            showArchive();
+        }
+        
+        // Редактирование записи в архиве
+        function editArchiveItem(index, newName) {
+            if (!newName.trim()) {
+                alert('Пожалуйста, введите название смены');
+                return;
+            }
+            
+            state.archive[index].name = newName.trim();
+            localStorage.setItem('shiftArchive', JSON.stringify(state.archive));
+            document.getElementById('editArchiveModal').style.display = 'none';
+            showArchive();
+        }
+        
+        // Показать архив
+        function showArchive() {
+            const archiveList = document.getElementById('archiveList');
+            archiveList.innerHTML = '';
+            
+            if (state.archive.length === 0) {
+                archiveList.innerHTML = '<p>Архив пуст</p>';
+            } else {
+                state.archive.forEach((item, index) => {
+                    const archiveItem = document.createElement('div');
+                    archiveItem.className = 'archive-item';
+                    archiveItem.innerHTML = `
+                        <div>
+                            <strong>${item.name}</strong>
+                            <div>${item.date}</div>
+                        </div>
+                        <div class="archive-actions">
+                            <button data-index="${index}" class="load-archive-btn">Загрузить</button>
+                            <button data-index="${index}" class="edit-archive-btn">Ред.</button>
+                            <button data-index="${index}" class="delete-archive-btn">Удалить</button>
+                        </div>
+                    `;
+                    archiveList.appendChild(archiveItem);
+                });
+            }
+            
+            document.getElementById('archiveModal').style.display = 'block';
+        }
+        
+        // Инициализация модальных окон
+        function initModals() {
+            // Архив
+            document.getElementById('archiveBtn').addEventListener('click', showArchive);
+            document.getElementById('closeArchiveBtn').addEventListener('click', () => {
+                document.getElementById('archiveModal').style.display = 'none';
+            });
+            
+            // Сохранение
+            document.getElementById('saveBtn').addEventListener('click', () => {
+                document.getElementById('saveModal').style.display = 'block';
+                document.getElementById('shiftName').focus();
+            });
+            
+            document.getElementById('cancelSaveBtn').addEventListener('click', () => {
+                document.getElementById('saveModal').style.display = 'none';
+            });
+            
+            document.getElementById('confirmSaveBtn').addEventListener('click', () => {
+                saveToArchive(document.getElementById('shiftName').value);
+            });
+            
+            // Сброс
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                document.getElementById('resetModal').style.display = 'block';
+            });
+            
+            document.getElementById('cancelResetBtn').addEventListener('click', () => {
+                document.getElementById('resetModal').style.display = 'none';
+            });
+            
+            document.getElementById('confirmResetBtn').addEventListener('click', () => {
+                resetAll();
+                document.getElementById('resetModal').style.display = 'none';
+            });
+            
+            // Редактирование архива
+            document.getElementById('cancelEditBtn').addEventListener('click', () => {
+                document.getElementById('editArchiveModal').style.display = 'none';
+            });
+            
+            document.getElementById('saveEditBtn').addEventListener('click', () => {
+                const index = document.getElementById('editArchiveModal').dataset.index;
+                editArchiveItem(index, document.getElementById('editShiftName').value);
+            });
+            
+            // Обработчики для динамически создаваемых кнопок архива
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('load-archive-btn')) {
+                    loadFromArchive(parseInt(e.target.dataset.index));
+                } else if (e.target.classList.contains('edit-archive-btn')) {
+                    const index = parseInt(e.target.dataset.index);
+                    document.getElementById('editShiftName').value = state.archive[index].name;
+                    document.getElementById('editArchiveModal').dataset.index = index;
+                    document.getElementById('editArchiveModal').style.display = 'block';
+                } else if (e.target.classList.contains('delete-archive-btn')) {
+                    deleteFromArchive(parseInt(e.target.dataset.index));
+                }
+            });
+            
+            // Закрытие модальных окон при клике вне их
+            window.addEventListener('click', (e) => {
+                if (e.target.classList.contains('modal')) {
+                    e.target.style.display = 'none';
+                }
+            });
+        }
+        
+        // Инициализация приложения
+        function init() {
+            initAssignmentTable();
+            initAvailableStaff();
+            initUnavailableStaff();
+            setupDropzones();
+            initModals();
+            updateTotalCounters();
+        }
+        
+        // Запуск приложения
+        window.onload = init;
+    </script>
+</body>
+</html>
