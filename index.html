@@ -7,50 +7,54 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
-            --primary: #4361ee;
-            --secondary: #3a0ca3;
-            --accent: #7209b7;
-            --light: #f8f9fa;
+            --primary: #dc3545;
+            --secondary: #000000;
+            --accent: #8b0000;
+            --light: #ffffff;
             --dark: #212529;
-            --success: #4cc9f0;
+            --success: #28a745;
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #000000 0%, #dc3545 100%);
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Verdana', Geneva, sans-serif;
         }
         
         .glass-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            border: 2px solid var(--primary);
+            box-shadow: 0 8px 32px rgba(220, 53, 69, 0.3);
         }
         
         .btn-primary {
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            background: linear-gradient(45deg, var(--primary), var(--accent));
             border: none;
-            border-radius: 50px;
-            padding: 12px 30px;
+            border-radius: 10px;
+            padding: 12px 25px;
             font-weight: 600;
             transition: all 0.3s ease;
+            font-family: Verdana, sans-serif;
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
+            background: linear-gradient(45deg, var(--accent), var(--primary));
         }
         
         .btn-outline-primary {
-            border-radius: 50px;
+            border-radius: 10px;
             border: 2px solid var(--primary);
             color: var(--primary);
             font-weight: 600;
             transition: all 0.3s ease;
+            font-family: Verdana, sans-serif;
         }
         
         .btn-outline-primary:hover {
@@ -59,123 +63,245 @@
             transform: translateY(-2px);
         }
         
+        .btn-outline-dark {
+            border-radius: 10px;
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+            font-weight: 600;
+            font-family: Verdana, sans-serif;
+        }
+        
         .form-control, .form-select {
-            border-radius: 12px;
-            border: 2px solid #e9ecef;
-            padding: 12px 16px;
+            border-radius: 8px;
+            border: 2px solid #dee2e6;
+            padding: 10px 14px;
             transition: all 0.3s ease;
+            font-family: Verdana, sans-serif;
         }
         
         .form-control:focus, .form-select:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
-        }
-        
-        .tag {
-            display: inline-flex;
-            align-items: center;
-            background: linear-gradient(45deg, var(--primary), var(--accent));
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            margin: 4px;
-            font-size: 0.9em;
-            font-weight: 500;
-        }
-        
-        .tag .close {
-            margin-left: 8px;
-            cursor: pointer;
-            opacity: 0.8;
-            transition: opacity 0.3s ease;
-        }
-        
-        .tag .close:hover {
-            opacity: 1;
-        }
-        
-        .preview-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-        
-        .preview-item {
-            background: white;
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 10px;
-            border-left: 4px solid var(--primary);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .preview-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-        
-        .copy-btn {
-            cursor: pointer;
-            opacity: 0.7;
-            transition: all 0.3s ease;
-        }
-        
-        .copy-btn:hover {
-            opacity: 1;
-            color: var(--success);
-        }
-        
-        .progress-bar {
-            background: linear-gradient(45deg, var(--primary), var(--accent));
-            border-radius: 10px;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
         }
         
         .selection-pill {
             display: inline-flex;
             align-items: center;
-            background: #e9ecef;
+            background: #f8f9fa;
             padding: 6px 12px;
-            border-radius: 20px;
+            border-radius: 15px;
             margin: 4px;
             font-size: 0.9em;
             cursor: pointer;
             transition: all 0.3s ease;
+            border: 2px solid #dee2e6;
+            font-family: Verdana, sans-serif;
         }
         
         .selection-pill.active {
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            background: linear-gradient(45deg, var(--primary), var(--accent));
             color: white;
+            border-color: var(--primary);
         }
         
         .selection-pill:hover {
             transform: scale(1.05);
+            border-color: var(--primary);
+        }
+        
+        .preview-modal .modal-content {
+            border-radius: 15px;
+            border: 3px solid var(--primary);
+        }
+        
+        .preview-modal .modal-header {
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            color: white;
+            border-bottom: 2px solid var(--secondary);
+        }
+        
+      .label-sheet {
+        width: 6cm;
+        height: 2.5cm;
+        margin: 0 auto;
+        padding: 0.2cm; /* Уменьшаем padding */
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: white;
+        page-break-after: always;
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+
+    .label-text {
+        flex: 1;
+        padding: 0.1cm; /* Уменьшаем padding */
+        font-family: Verdana, sans-serif;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+
+    .label-text div:first-child {
+        font-size: 14px !important; /* Уменьшаем шрифт */
+        font-weight: bold;
+        margin-bottom: 1px; /* Уменьшаем отступ */
+    }
+
+    .label-text div:last-child {
+        font-size: 12px !important; /* Уменьшаем шрифт */
+        font-weight: bold;
+    }
+
+    .label-qr {
+        flex: 1;
+        padding: 0.1cm; /* Уменьшаем padding */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+margin-bottom: 0.2cm !important;
+    }
+
+
+.print-container {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+   @media print {
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        body * {
+            visibility: hidden;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        .print-section, .print-section * {
+            visibility: visible;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        .print-section {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: auto;
+            height: auto;
+            background: white;
+        }
+        
+        .print-container {
+            display: grid !important;
+            grid-template-columns: repeat(1, 1fr) !important;
+            gap: 0 !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        .label-sheet {
+            width: 6cm !important;
+            height: 2.5cm !important;
+            margin: 0 auto !important;
+            padding: 0.2cm !important;
+            border: none !important;
+            box-shadow: none !important;
+            page-break-after: always !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+        
+        .label-text {
+            flex: 1 !important;
+            text-align: center !important;
+            display: flex !important;
+padding: 0.1cm !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            height: 100% !important;
+        }
+        
+        .label-text div:first-child {
+            font-size: 18px !important;
+            font-weight: bold !important;
+            margin-bottom: 1px; !important;
+        }
+        
+        .label-text div:last-child {
+            font-size: 20px !important;
+            font-weight: bold !important;
+        }
+        
+        .label-qr {
+ padding: 0.1cm !important; /* Уменьшаем padding */
+            flex: 1 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            height: 100% !important;
+ margin-bottom: 0.2cm !important;
+        }
+
+        @page {
+            margin: 0 !important;
+            size: 6cm 2.5cm; /* Точный размер этикетки */
+        }
+    }
+        
+        .settings-badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            margin-left: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="container py-5">
+    <div class="container py-4">
         <div class="row justify-content-center">
             <div class="col-lg-10">
                 <!-- Header -->
-                <div class="text-center mb-5">
-                    <h1 class="text-white fw-bold mb-3">
-                        <i class="fas fa-warehouse me-3"></i>Генератор ячеек хранения
+                <div class="text-center mb-4">
+                    <h1 class="text-white fw-bold mb-2">
+                        <i class="fas fa-warehouse me-2"></i>Генератор ячеек хранения
                     </h1>
-                    <p class="text-white-50">Создайте Excel-файл с ячейками хранения в современном формате</p>
+                    <p class="text-white">Создайте Excel-файл с ячейками хранения и этикетками</p>
                 </div>
 
                 <!-- Main Card -->
-                <div class="glass-card p-4 mb-4">
+                <div class="glass-card p-4 mb-3">
                     <div class="row">
                         <!-- Left Column - Configuration -->
                         <div class="col-md-6">
-                            <h4 class="mb-4"><i class="fas fa-cog me-2"></i>Настройки</h4>
+                            <h4 class="mb-3"><i class="fas fa-cog me-2"></i>Настройки</h4>
                             
                             <!-- Blocks -->
-                            <div class="mb-4">
+                            <div class="mb-3">
                                 <label class="form-label fw-bold">Блоки мезонина:</label>
                                 <div class="d-flex flex-wrap" id="blocksContainer">
                                     <span class="selection-pill" data-value="A">A</span>
@@ -195,25 +321,25 @@
                             </div>
 
                             <!-- Floors -->
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <label class="form-label fw-bold">Этажи:</label>
                                 <input type="text" class="form-control" id="floors" value="1-5" placeholder="1-5 или 1,2,3">
                             </div>
 
                             <!-- Rows -->
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <label class="form-label fw-bold">Ряды:</label>
                                 <input type="text" class="form-control" id="rows" value="1-40" placeholder="1-40 или 1,2,3">
                             </div>
 
                             <!-- Cabinets -->
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <label class="form-label fw-bold">Шкафы:</label>
                                 <input type="text" class="form-control" id="cabinets" value="1-50" placeholder="1-50 или 1,2,3">
                             </div>
 
                             <!-- Shelves -->
-                            <div class="mb-4">
+                            <div class="mb-3">
                                 <label class="form-label fw-bold">Полки:</label>
                                 <div class="d-flex flex-wrap" id="shelvesContainer">
                                     <span class="selection-pill" data-value="A">A</span>
@@ -237,10 +363,10 @@
 
                         <!-- Right Column - Additional Settings -->
                         <div class="col-md-6">
-                            <h4 class="mb-4"><i class="fas fa-sliders-h me-2"></i>Дополнительно</h4>
+                            <h4 class="mb-3"><i class="fas fa-sliders-h me-2"></i>Дополнительно</h4>
                             
                             <!-- Format -->
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <label class="form-label fw-bold">Формат номера:</label>
                                 <input type="text" class="form-control" id="format" value="{block}{floor}-{row:02}-{shelf}-{cabinet:02}{place}">
                                 <small class="text-muted">
@@ -249,32 +375,32 @@
                             </div>
 
                             <!-- Filename -->
-                            <div class="mb-3">
+                            <div class="mb-2">
                                 <label class="form-label fw-bold">Имя файла:</label>
                                 <input type="text" class="form-control" id="filename" value="ячейки_хранения.xlsx">
                             </div>
 
                             <!-- Limit -->
-                            <div class="mb-4">
+                            <div class="mb-3">
                                 <label class="form-label fw-bold">Лимит записей:</label>
                                 <input type="number" class="form-control" id="limit" value="1000" min="1" max="100000">
                             </div>
 
                             <!-- Actions -->
                             <div class="d-grid gap-2">
-                                <button class="btn btn-primary btn-lg" onclick="generateExcel()">
+                                <button class="btn btn-primary mb-2" onclick="generateExcel()">
                                     <i class="fas fa-file-excel me-2"></i>Сгенерировать Excel
                                 </button>
-                                <button class="btn btn-outline-primary" onclick="updatePreview()">
-                                    <i class="fas fa-eye me-2"></i>Предпросмотр
+                                <button class="btn btn-outline-primary mb-2" onclick="showPreview()">
+                                    <i class="fas fa-print me-2"></i>Печать этикеток
                                 </button>
-                                <button class="btn btn-outline-secondary" onclick="copyToClipboard()">
-                                    <i class="fas fa-copy me-2"></i>Копировать список
+                                <button class="btn btn-outline-dark" onclick="resetSettings()">
+                                    <i class="fas fa-trash me-2"></i>Сбросить настройки
                                 </button>
                             </div>
 
                             <!-- Progress -->
-                            <div class="mt-4">
+                            <div class="mt-3">
                                 <div id="progress" class="d-none">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <span>Генерация...</span>
@@ -284,23 +410,15 @@
                                         <div id="progressBar" class="progress-bar" style="width: 0%"></div>
                                     </div>
                                 </div>
-                                <div id="error" class="alert alert-danger d-none mt-3"></div>
+                                <div id="error" class="alert alert-danger d-none mt-2"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Preview Section -->
-                <div class="glass-card p-4">
-                    <h4 class="mb-3"><i class="fas fa-list me-2"></i>Предпросмотр</h4>
-                    <div id="preview" class="preview-card">
-                        <p class="text-center text-muted">Нажмите "Предпросмотр" чтобы увидеть примеры ячеек</p>
-                    </div>
-                </div>
-
                 <!-- Selected Items -->
-                <div class="glass-card p-4 mt-4">
-                    <h4 class="mb-3"><i class="fas fa-check-circle me-2"></i>Выбранные значения</h4>
+                <div class="glass-card p-3">
+                    <h4 class="mb-2"><i class="fas fa-check-circle me-2"></i>Выбранные значения</h4>
                     <div id="selectedItems">
                         <p class="text-muted">Выберите параметры для генерации</p>
                     </div>
@@ -309,6 +427,38 @@
         </div>
     </div>
 
+    <!-- Preview Modal -->
+    <div class="modal fade preview-modal" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-print me-2"></i>Печать этикеток</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-between align-items-center mb-3 d-print-none">
+                    <span>Найдено ячеек: <span id="previewCount">0</span></span>
+                    <div>
+                        <button class="btn btn-primary btn-sm me-2" onclick="printLabels()" id="printButton">
+    <i class="fas fa-print me-1"></i>Печать
+</button>
+                        <button class="btn btn-outline-primary btn-sm" onclick="regeneratePreview()">
+                            <i class="fas fa-sync me-1"></i>Обновить
+                        </button>
+                    </div>
+                </div>
+                <div id="previewContainer" class="print-section">
+                    <!-- Labels will be generated here -->
+                </div>
+            </div>
+            <div class="modal-footer d-print-none">
+                <small class="text-muted">Размер этикетки: 6см × 2.5см | Шрифт: Verdana</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
