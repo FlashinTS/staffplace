@@ -402,7 +402,7 @@ function printLabels() {
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        height: 70%;
+                        height: 80%;
 margin-bottom: 0.4cm !important;
                     }
                     
@@ -656,4 +656,5 @@ document.getElementById('cabinets').addEventListener('input', updateSelectedItem
 document.getElementById('places').addEventListener('input', updateSelectedItems);
 document.getElementById('format').addEventListener('input', updateSelectedItems);
 document.getElementById('filename').addEventListener('input', saveSettings);
+
 document.getElementById('limit').addEventListener('input', saveSettings);
