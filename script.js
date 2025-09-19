@@ -234,7 +234,7 @@ function generateLabels() {
             let html = '<div class="print-container">';
             let count = 0;
             
-            // Генерируем все комбинации для этикеток
+            // Генерируем все комбинации для этикеток БЕЗ ОГРАНИЧЕНИЙ
             for (const block of selectedBlocks) {
                 for (const floor of floors) {
                     for (const row of rows) {
@@ -251,45 +251,56 @@ function generateLabels() {
                                         </div>
                                     `;
                                     count++;
-                                    
-                                    // Ограничиваем предпросмотр для производительности
-                                    if (count >= 50) break;
                                 }
-                                if (count >= 50) break;
                             }
-                            if (count >= 50) break;
                         }
-                        if (count >= 50) break;
                     }
-                    if (count >= 50) break;
                 }
-                if (count >= 50) break;
             }
             
             html += '</div>';
             container.innerHTML = html;
             countElement.textContent = count.toLocaleString();
             
-            // Генерируем QR-коды
-            setTimeout(() => {
-                for (let i = 0; i < count; i++) {
-                    const qrContainer = document.getElementById(`qr-${i}`);
-                    if (qrContainer) {
-                        // Очищаем предыдущий QR-код если есть
-                        qrContainer.innerHTML = '';
-                        const qrText = qrContainer.getAttribute('data-qrtext');
-                        
-                        new QRCode(qrContainer, {
-                            text: qrText,
-                            width: 80,
-                            height: 80,
-                            colorDark: "#000000",
-                            colorLight: "#ffffff",
-                            correctLevel: QRCode.CorrectLevel.H
-                        });
-                    }
+            // Генерируем QR-коды с оптимизацией для большого количества
+            let generated = 0;
+            const total = count;
+            
+            function generateNextQr() {
+                if (generated >= total) return;
+                
+                const qrContainer = document.getElementById(`qr-${generated}`);
+                if (qrContainer) {
+                    qrContainer.innerHTML = '';
+                    const qrText = qrContainer.getAttribute('data-qrtext');
+                    
+                    new QRCode(qrContainer, {
+                        text: qrText,
+                        width: 60,
+                        height: 60,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
                 }
-            }, 100);
+                
+                generated++;
+                
+                // Обновляем прогресс каждые 50 QR-кодов
+                if (generated % 50 === 0 || generated === total) {
+                    document.getElementById('previewCount').textContent = `${generated.toLocaleString()} / ${total.toLocaleString()}`;
+                    
+                    // Даем браузеру "подышать" чтобы не завис
+                    if (generated < total) {
+                        setTimeout(generateNextQr, 50);
+                    }
+                } else {
+                    generateNextQr();
+                }
+            }
+            
+            // Запускаем генерацию QR-кодов
+            setTimeout(generateNextQr, 100);
             
         }, 500);
         
