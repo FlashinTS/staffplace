@@ -276,8 +276,8 @@ function generateLabels() {
                     
                     new QRCode(qrContainer, {
                         text: qrText,
-                        width: 60,
-                        height: 60,
+                        width: 70,
+                        height: 70,
                         colorDark: "#000000",
                         colorLight: "#ffffff",
                         correctLevel: QRCode.CorrectLevel.H
@@ -398,11 +398,11 @@ function printLabels() {
                     
                     .label-qr {
                         flex: 1;
-                        padding: 0.1cm;
+                        padding-left: 0.4cm;
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        height: 80%;
+                        height: 180%;
 margin-bottom: 0.4cm !important;
                     }
                     
@@ -444,7 +444,7 @@ font-weight: bold !important; /* ДЕЛАЕМ ЖИРНЫМ */
                         }
                         
                         .label-qr {
-                            padding: 0.1cm !important;
+                            padding-left: 0.4cm;
 margin-bottom: 0.4cm !important;
 justify-content: flex-end; /* ВЫРАВНИВАЕМ ПО ПРАВОМУ КРАЮ */
                         }
@@ -656,5 +656,4 @@ document.getElementById('cabinets').addEventListener('input', updateSelectedItem
 document.getElementById('places').addEventListener('input', updateSelectedItems);
 document.getElementById('format').addEventListener('input', updateSelectedItems);
 document.getElementById('filename').addEventListener('input', saveSettings);
-
 document.getElementById('limit').addEventListener('input', saveSettings);
