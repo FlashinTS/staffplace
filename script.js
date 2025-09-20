@@ -276,8 +276,8 @@ function generateLabels() {
                     
                     new QRCode(qrContainer, {
                         text: qrText,
-                        width: 70,
-                        height: 70,
+                        width: 80,
+                        height: 80,
                         colorDark: "#000000",
                         colorLight: "#ffffff",
                         correctLevel: QRCode.CorrectLevel.H
@@ -656,4 +656,5 @@ document.getElementById('cabinets').addEventListener('input', updateSelectedItem
 document.getElementById('places').addEventListener('input', updateSelectedItems);
 document.getElementById('format').addEventListener('input', updateSelectedItems);
 document.getElementById('filename').addEventListener('input', saveSettings);
+
 document.getElementById('limit').addEventListener('input', saveSettings);
