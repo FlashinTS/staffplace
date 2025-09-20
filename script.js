@@ -434,13 +434,13 @@ font-weight: bold !important; /* ДЕЛАЕМ ЖИРНЫМ */
                         }
                         
                         .label-text div:first-child {
-                            font-size: 24px !important;
+                            font-size: 22px !important;
                             margin-bottom: 1px !important;
  margin-top: -5px !important; /* СДВИГАЕМ ВЫШЕ */
                         }
                         
                         .label-text div:last-child {
-                            font-size: 24px !important;
+                            font-size: 22px !important;
                         }
                         
                         .label-qr {
@@ -658,3 +658,4 @@ document.getElementById('format').addEventListener('input', updateSelectedItems)
 document.getElementById('filename').addEventListener('input', saveSettings);
 
 document.getElementById('limit').addEventListener('input', saveSettings);
+
